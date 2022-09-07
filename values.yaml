@@ -20,8 +20,8 @@ images:
 
 models:
   model1:
-      name: model1
-      image: registry/model1:tag
+    name: model1
+    image: registry/model1:tag
   model2:
-      name: model2
-      image: registry/model2:tag
+    name: model2
+    image: registry/model2:tag
