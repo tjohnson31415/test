@@ -1,0 +1,16 @@
+deploymentName: test
+
+imageRegistry:
+  - pullSecrets:
+    - name: test-secret
+  - url: uk.icr.io
+  - org: deleeuw-test
+
+images:
+  runtime:
+    name: test
+    tag: v2
+
+models: []
+
+serviceType: ClusterIP

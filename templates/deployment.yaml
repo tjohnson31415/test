@@ -1,0 +1,59 @@
+{{- $compName := .Values.deploymentName -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ $compName }}
+  labels:
+    {{- include "-kube.labels" (list . $compName) | nindent 4 }}
+spec:
+  #replicas: 1 is the default, let's not use it and scale manually, so that kubectl apply does not overwrite this
+  selector:
+    matchLabels:
+      {{- include "-kube.selectorLabels" (list . $compName) | nindent 6 }}
+  progressDeadlineSeconds: 1800
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "-kube.selectorLabels" (list . $compName) | nindent 8 }}
+    spec:
+      volumes:  
+        - name: models
+          emptyDir: {}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{ if .Values.models }}
+      initContainers:
+      {{- range .Values.models }}      
+      - name: {{ .name }}
+        image: {{ .image }}
+        volumeMounts:
+          - name: models
+            mountPath: /models
+      {{- end }}
+      {{ end }}
+      containers:
+        - name: --container
+          image: {{ include "-kube.image" (list . "container") }}
+          ports:
+            - containerPort: 8080
+            - containerPort: 8085
+          volumeMounts:
+            - name: models
+              mountPath: /models
+          env:
+            - name: LOCAL_MODELS_DIR
+              value: /models
+            - name: LOG_LEVEL
+              value: debug
