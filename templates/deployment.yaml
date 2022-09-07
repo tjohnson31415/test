@@ -1,16 +1,16 @@
-{{- $compName := .Values.deploymentName -}}
+{{- $compName := .Values.components.abcRuntime.name -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ $compName }}
   labels:
-    {{- include "-kube.labels" (list . $compName) | nindent 4 }}
+    {{- include "product-abc.labels" (list . $compName) | nindent 4 }}
 spec:
   #replicas: 1 is the default, let's not use it and scale manually, so that kubectl apply does not overwrite this
   selector:
     matchLabels:
-      {{- include "-kube.selectorLabels" (list . $compName) | nindent 6 }}
+      {{- include "product-abc.selectorLabels" (list . $compName) | nindent 6 }}
   progressDeadlineSeconds: 1800
   strategy:
     type: RollingUpdate
@@ -24,7 +24,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "-kube.selectorLabels" (list . $compName) | nindent 8 }}
+        {{- include "product-abc.selectorLabels" (list . $compName) | nindent 8 }}
     spec:
       volumes:  
         - name: models
@@ -44,8 +44,8 @@ spec:
       {{- end }}
       {{ end }}
       containers:
-        - name: --container
-          image: {{ include "-kube.image" (list . "container") }}
+        - name: product-abc-container
+          image: {{ include "product-abc.image" (list . "product-abc-container") }}
           ports:
             - containerPort: 8080
             - containerPort: 8085

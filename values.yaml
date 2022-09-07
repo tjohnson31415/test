@@ -1,16 +1,27 @@
-deploymentName: test
+# Default values for product-abc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-imageRegistry:
-  - pullSecrets:
-    - name: test-secret
-  - url: uk.icr.io
-  - org: deleeuw-test
-
-images:
-  runtime:
-    name: test
-    tag: v2
-
-models: []
-
+# serviceType sets the type of the ABC runtime
 serviceType: ClusterIP
+
+components:
+  abcRuntime:
+    name: "product-runtime"
+  
+imagePullSecrets:
+  - name: artifactory-key
+
+containerRegistry: uk.icr.io/deleeuw-product-abc
+images:
+  product-abc-container:
+    repository: product-abc-container
+    tag: v1
+
+models:
+  model1:
+      name: model1
+      image: registry/model1:tag
+  model2:
+      name: model2
+      image: registry/model2:tag
