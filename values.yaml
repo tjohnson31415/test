@@ -19,9 +19,9 @@ images:
     tag: v1
 
 models:
-  model1:
+  - model1:
     name: model1
     image: registry/model1:tag
-  model2:
+  - model2:
     name: model2
     image: registry/model2:tag
