@@ -40,7 +40,7 @@ spec:
         image: {{ .image }}
         volumeMounts:
           - name: models
-            mountPath: /models
+            mountPath: /app/models
       {{- end }}
       {{ end }}
       containers:
@@ -51,9 +51,9 @@ spec:
             - containerPort: 8085
           volumeMounts:
             - name: models
-              mountPath: /models
+              mountPath: /app/models
           env:
             - name: LOCAL_MODELS_DIR
-              value: /models
+              value: /app/models
             - name: LOG_LEVEL
               value: debug
