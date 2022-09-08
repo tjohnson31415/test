@@ -1,5 +1,5 @@
 apiVersion: v2
-name: product-abc
+name: test
 description: Deploy a minimal product-abc deployment on k8s
 type: application
 version: v0.0.2
