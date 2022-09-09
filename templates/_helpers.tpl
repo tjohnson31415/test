@@ -61,7 +61,7 @@ Image reference
   {{- $root := index $params 0 -}}
   {{- $imageName := index $params 1 -}}
 
-  {{- $registry := $root.Values.containerRegistry }}
+  {{- $registry := $root.Values.imageRegistry }}
   {{- with (index $root.Values.images $imageName) }}
     {{- if .digest -}}
 {{ printf "%s/%s@%s" $registry .repository .digest }}

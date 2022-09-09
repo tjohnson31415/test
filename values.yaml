@@ -2,26 +2,23 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# serviceType sets the type of the ABC runtime
 serviceType: ClusterIP
+
+imagePullSecrets:
+  - name: artifactory-key
+
+imageRegistry: productimageregistry.com
+imageRegistryModels: modelimageregistry.com
 
 components:
   abcRuntime:
     name: "product-runtime"
   
-imagePullSecrets:
-  - name: artifactory-key
-
-containerRegistry: uk.icr.io/deleeuw-product-abc
 images:
   product-abc-container:
-    repository: product-abc-container
-    tag: v1
+    repository: watson-nlp-runtime
+    tag: 0.14.0_ubi8_py38
 
 models:
-  model1:
-    name: model1
-    image: registry/model1:tag
-  model2:
-    name: model2
-    image: registry/model2:tag
+  - image: repository:tag
+  - image: repository:tag
