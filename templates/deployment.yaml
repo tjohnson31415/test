@@ -1,17 +1,16 @@
-{{- $compName := .Values.components.abcRuntime.name -}}
-{{- $imageRegistryModels := .Values.imageRegistryModels -}}
+{{- $compName := .Values.componentName -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ $compName }}
   labels:
-    {{- include "product-abc.labels" (list . $compName) | nindent 4 }}
+    {{- include "test.labels" (list . $compName) | nindent 4 }}
 spec:
   #replicas: 1 is the default, let's not use it and scale manually, so that kubectl apply does not overwrite this
   selector:
     matchLabels:
-      {{- include "product-abc.selectorLabels" (list . $compName) | nindent 6 }}
+      {{- include "test.selectorLabels" (list . $compName) | nindent 6 }}
   progressDeadlineSeconds: 1800
   strategy:
     type: RollingUpdate
@@ -25,36 +24,48 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "product-abc.selectorLabels" (list . $compName) | nindent 8 }}
+        {{- include "test.selectorLabels" (list . $compName) | nindent 8 }}
     spec:
       volumes:  
         - name: models
-          emptyDir: {}
+          emptyDir: {}   
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{ if .Values.models }}
+      {{- if .Values.models }}
       initContainers:
-      {{- range $index, $model := .Values.models }}      
+      {{- range $index, $model := .Values.models }}  
+      {{- $registryName := $model.registry }}
+      {{- $image := $model.image }}
       - name: model-{{ $index }}
-        image: {{ $imageRegistryModels }}/{{ $model.image }}
+        image: {{- include "test.registries" (list $ $registryName $image) | trim | indent 1}}
         volumeMounts:
           - name: models
             mountPath: /app/models
       {{- end }}
-      {{ end }}
+      {{- end }}
       containers:
-        - name: product-abc-container
-          image: {{ include "product-abc.image" (list . "product-abc-container") }}
-          ports:
-            - containerPort: 8080
-            - containerPort: 8085
-          volumeMounts:
-            - name: models
-              mountPath: /app/models
-          env:
-            - name: LOCAL_MODELS_DIR
-              value: /app/models
-            - name: LOG_LEVEL
-              value: debug
+      - name: product-abc
+        {{- $registryName := .Values.runtime.registry }}
+        {{- $image := .Values.runtime.image }}
+        image: {{- include "test.registries" (list $ $registryName $image) | trim | indent 1}}
+        ports:
+          - containerPort: 8080
+          - containerPort: 8085
+        volumeMounts:
+          - name: models
+            mountPath: /app/models
+        env:
+          - name: LOCAL_MODELS_DIR
+            value: /app/models
+          - name: LOG_LEVEL
+            value: debug
+        readinessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:8085"]
+          initialDelaySeconds: 5
+        livenessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:8085"]
+          initialDelaySeconds: 10

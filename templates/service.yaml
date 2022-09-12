@@ -1,4 +1,4 @@
-{{- $compName := .Values.components.abcRuntime.name -}}
+{{- $compName := .Values.componentName -}}
 ---
 apiVersion: v1
 kind: Service
@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-{{ $compName }}
 spec:
   type: {{ .Values.serviceType }}
-  selector: {{- include "product-abc.selectorLabels" (list . $compName) | nindent 4 }}
+  selector: {{- include "test.selectorLabels" (list . $compName) | nindent 4 }}
   ports:
   - port: 8080
     protocol: TCP

@@ -1,17 +1,16 @@
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "product-abc.chart" -}}
+{{- define "test.chart" -}}
   {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
-
 
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "product-abc.fullname" -}}
+{{- define "test.fullname" -}}
   {{- if .Values.fullnameOverride }}
     {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
   {{- else }}
@@ -24,49 +23,41 @@ If release name contains chart name it will be used as a full name.
   {{- end }}
 {{- end }}
 
-
 {{/*
 Common labels
 */}}
-{{- define "product-abc.labels" -}}
+{{- define "test.labels" -}}
   {{- $params := . -}}
   {{- $root := index $params 0 -}}
   {{- $compName := index $params 1 -}}
-helm.sh/chart: {{ include "product-abc.chart" $root }}
-{{ include "product-abc.selectorLabels" (list $root $compName) }}
+helm.sh/chart: {{ include "test.chart" $root }}
+{{ include "test.selectorLabels" (list $root $compName) }}
 {{- if $root.Chart.AppVersion }}
 app.kubernetes.io/version: {{ $root.Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ $root.Release.Service }}
 {{- end }}
 
-
 {{/*
 Selector labels
 */}}
-{{- define "product-abc.selectorLabels" -}}
+{{- define "test.selectorLabels" -}}
   {{- $params := . -}}
   {{- $root := index $params 0 -}}
   {{- $compName := index $params 1 -}}
-app.kubernetes.io/name: {{ include "product-abc.fullname" $root }}
+app.kubernetes.io/name: {{ include "test.fullname" $root }}
 app.kubernetes.io/component: {{ $compName }}
 app.kubernetes.io/instance: {{ $root.Release.Name }}
 {{- end }}
 
 {{/*
-Image reference
+Registry lookup
 */}}
-{{- define "product-abc.image" -}}
-  {{- $params := . -}}
-  {{- $root := index $params 0 -}}
-  {{- $imageName := index $params 1 -}}
-
-  {{- $registry := $root.Values.imageRegistry }}
-  {{- with (index $root.Values.images $imageName) }}
-    {{- if .digest -}}
-{{ printf "%s/%s@%s" $registry .repository .digest }}
-    {{- else -}}
-{{ printf "%s/%s:%s" $registry .repository .tag }}
-    {{- end }}
-  {{- end }}
+{{- define "test.registries" }}
+  {{- $root := index . 0 }}
+  {{- $registryName := index . 1 }}
+  {{- $image := index . 2 }}
+  {{- $registryUrlMap := index $root.Values.registries $registryName }}
+  {{- $registryUrl := index $registryUrlMap "url"}}
+  {{ print $registryUrl}}/{{print $image}}
 {{- end }}
