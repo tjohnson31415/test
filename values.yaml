@@ -1,7 +1,3 @@
-# Default values for product-abc.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 componentName: product-abc
 serviceType: ClusterIP
 
