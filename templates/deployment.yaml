@@ -29,9 +29,9 @@ spec:
       volumes:  
         - name: models
           emptyDir: {}   
-      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
       {{- end }}
       {{- if .Values.models }}
       initContainers:

@@ -57,7 +57,9 @@ Registry lookup
   {{- $root := index . 0 }}
   {{- $registryName := index . 1 }}
   {{- $image := index . 2 }}
-  {{- $registryUrlMap := index $root.Values.registries $registryName }}
-  {{- $registryUrl := index $registryUrlMap "url"}}
-  {{ print $registryUrl}}/{{print $image}}
+  {{- range $k, $v := $root.Values.registries }}
+    {{- if eq $v.name $registryName}}
+      {{ print $v.url}}/{{print $image}}
+    {{- end }}
+  {{- end }}
 {{- end }}

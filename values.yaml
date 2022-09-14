@@ -2,13 +2,13 @@ componentName: product-abc
 serviceType: ClusterIP
 
 imagePullSecrets:
-  - name: productreg-key
-  - name: myreg-key
+  - productreg-key
+  - myreg-key
 
 registries:
-  product:
+  - name: product
     url: productreg.com
-  my-reg:
+  - name: my-reg
     url: myreg/namespace
 
 runtime:
