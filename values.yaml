@@ -19,6 +19,6 @@ models:
   - registry: product
     image: model1image:tag
   - registry: product
-    image: model1image:tag
+    image: model2image:tag
   - registry: my-reg
     image: mynamespace/mymodel:latest
